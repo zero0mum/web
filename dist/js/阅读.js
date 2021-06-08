@@ -389,7 +389,7 @@
 	function bookshelf(){
 		// var action = document.querySelector('#home');
 		// action.classList.toggle('out')
-		window.open("书架.html",target="_self");
+		window.open("https://mumu_zero.gitee.io/",target="_self");
 	}
 	//切换开关
 	function action_switch(){
