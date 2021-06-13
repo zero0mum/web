@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<meta charset="UTF-8">
+<title>磁力链接转换</title>
+</head>
+
+<body>
+<p>输入迅雷链接:</p><input type="text" id="x" style="width:1000px; height:50px" value="">
+</br>
+<button onclick = thunderToNormal() style="width:100px;height:26px">转换</button>
+</br>
+<input type="text" id="y" style="width:1000px; height:50px" value="">
+
+	<script>
+	function thunderToNormal(){
+			var thunder = document.getElementById("x").value;//从id为x的input标签中获取迅雷链接的值
+			if(thunder.substring(0,10).search("thunder")!=-1||thunder.substring(0,10).search("Thunder")!=-1)//判断如果上一0~10个字符句获取到的字符中的第中包含thunder或Thunder
+			{
+			    thunder = thunder.substring(10,);//把thunder第十个字符(含第10个)开始到最后的字符赋值给自己 即去掉链接中 thunder://
+			var normal = window.atob(thunder);//base64解码
+			var len = normal.length-2;//获取长度
+			normal = normal.substring(2,len);
+			normal = decodeURI(normal);//url解码
+			document.getElementById("y").value = normal;//输出出到input文本框
+			}
+			else alert("所输入非迅雷链接 eg:Thunder://QUFodHRwOi8vaW0uYmFpZHUuY29tL2luc3RhbGwvQmFpZHVIaS5leGVaWg==   注意：thunder://前不得有空格等其他字符");
+		}
+	</script>
+</body>
+
+</html>
