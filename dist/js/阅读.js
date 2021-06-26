@@ -389,7 +389,7 @@
 	function bookshelf(){
 		// var action = document.querySelector('#home');
 		// action.classList.toggle('out')
-		window.open("https://mumu_zero.gitee.io/",target="_self");
+		window.open("书架.html",target="_self");
 	}
 	//切换开关
 	function action_switch(){
@@ -799,3 +799,24 @@ function CloseCover(){
 	document.getElementById("CoverLoading").style.display = "none";
 	setTimeout(function(){$('#the_over').css('display','block')},WaitTime*1000)
 	}
+// 鼠标隐藏
+(function() { 
+    var mouseTimer = null, cursorVisible = true; 
+
+    function disappearCursor() { 
+     mouseTimer = null; 
+     document.body.style.cursor = "none"; 
+     cursorVisible = false; 
+    } 
+
+    document.onmousemove = function() { 
+     if (mouseTimer) { 
+      window.clearTimeout(mouseTimer); 
+     } 
+     if (!cursorVisible) { 
+      document.body.style.cursor = "default"; 
+      cursorVisible = true; 
+     } 
+     mouseTimer = window.setTimeout(disappearCursor, 5000); 
+    }; 
+})();
