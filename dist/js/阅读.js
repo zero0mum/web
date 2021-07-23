@@ -389,7 +389,7 @@
 	function bookshelf(){
 		// var action = document.querySelector('#home');
 		// action.classList.toggle('out')
-		window.open("书架.html",target="_self");
+		window.open("index.html",target="_self");
 	}
 	//切换开关
 	function action_switch(){
