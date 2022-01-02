@@ -160,7 +160,7 @@ else:
 
 
 url_bn = "https://www.bnmanhua.com"
-url_bn1 = "https://www.bnmanhua.com/search.html"
+url_bn1 = "https://www.bnman.net/search.html?keyword="
 url_yk = "https://www.ykmh.com"
 url_yk1 = 'https://www.ykmh.com/search/?keywords='
 url_1234 = 'https://www.zxkai.com'
@@ -169,7 +169,7 @@ url_xm = 'http://www.xmanhua.com'
 url_xm1 = 'http://www.xmanhua.com/search?title='
 url_dm1 = 'https://www.dmzj.com/dynamic/o_search/index'
 url_mp1 = 'http://mangapanda.cc/search?s='
-url_gf1 = 'https://www.gufengmh8.com/search/?keywords='
+url_gf1 = 'https://www.gufengmh9.com/search/?keywords='
 
 headers_bn = {
     'Content-Type': 'application/x-www-form-urlencoded',
@@ -254,7 +254,7 @@ def create_filewb(path,msg):#图片内容写文件
 def first_chaperro():#起始章节数报错
   global i,j,chapter,filepath,names,web
   if (j>len(chapter)):
-    print('起始章节数输入错误！！,因该漫画收录不全,只收录了从 {}，{}...到 {} 的内容\n(比如网站只收集了123~500话的内容(缺失前123话),而你想爬取200话之后的所有内容,则应该输入200-123=77,即77作为起始章节数输入,而非200。)'.format(chapter[0],chapter[1],chapter[-1]))
+    print('起始章节数输入错误!!,因该漫画收录不全,只收录了从 {}，{}...到 {} 的内容\n(比如网站只收集了123~500话的内容(缺失前123话),而你想爬取200话之后的所有内容,则应该输入200-123=77,即77作为起始章节数输入,而非200。)'.format(chapter[0],chapter[1],chapter[-1]))
     remove_file(filepath+"\\"+names[i-2]+web)
     bro.quit()
     restart_program()
@@ -303,7 +303,7 @@ def DownLoad():
     count += int(pages_download[j])
     d+=1
   print("\n  下载的漫画保存在【{}】目录下".format(comic_download))
-  print(" 已下载完成，可以离线看漫画啦！！\n")
+  print(" 已下载完成，可以离线看漫画啦!!\n")
   song("下载完成.wav")
 def MultiStr_position(mu,zi):
   """查询子字符串在大字符串中的所有位置"""
@@ -752,9 +752,9 @@ if(webchoice==1):
       i+=1
       j-=1
       
-      res3 = r.get(url_bn3,headers=headers2)
+      res3 = r.get(url_bn3)
       res3 = res3.text
-      
+
       soup2 = BeautifulSoup(res3,'lxml')
       img_begin = res3.find('z_img')
       img_end = res3.find('.jpg"]')
