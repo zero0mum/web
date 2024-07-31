@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html>
+  <head>
+	<!-- 可选在线mqtt.min.js文件与本地mqtt.min.js文件 -->
+    <script src=" https://unpkg.com/mqtt@5.3.4/dist/mqtt.min.js"></script>
+
+  </head>
+  <body>
+    <h2>MQTT服务器设置</h2>
+    <form>
+      服务器地址:
+      <input type="text" id="host" value="">
+      服务器端口:
+      <input type="text" id="port" value=""> </br>
+      服务器路径:
+      <input type="text" id="path" value="">
+      客  户  端  ID:
+      <input type="text" id="clientID" value=""> </br>
+	  连接协议（tcp,mqtts,ws,wss等,浏览器环境只能使用ws或wss）:
+      <input type="text" id="protocol" value=""> </br>
+	  用   户   名:
+      <input type="text" id="user" value="">
+	  密        码:
+      <input type="text" id="password" value=""> </br>
+    </form>
+    <button id="connectBtn" onclick="connectMQTT()">连接</button>
+	<button id="disconnectBtn" disabled="disabled" onclick="connectEND()">已断开</button>
+	<button onclick="cliksave()" type="button">保存信息</button>
+  </body>
+  <body>
+	<h2>MQTT订阅</h2>
+	主题:
+      <input type="text" id="subtopic" value="test">
+	<button onclick="subscribe_topic()">订阅</button>
+
+  </body>
+  <body>
+    <h2>MQTT消息发送</h2>
+      主题:
+      <input type="text" id="topic" value="test">
+      消息:
+      <input type="text" id="message" value="test">
+	  <button onclick="sendMessage()">发送</button>
+  </body>
+  <body>
+	<h1>消息框</h1>
+	<button id="auto_down_button" onclick="change_flag()" type="button">关闭自动滚动</button> </br>
+	    <textarea id="messageTextArea" style="resize:none;" cols="80" rows="20"></textarea><br/>
+  </body>
+  <script>
+	var auto_down_flag = 1
+	var msg_host
+	var msg_port
+	var msg_path
+	var msg_protocol
+	var msg_user
+	var msg_password
+	var msg_subtopic
+	var msg_topic
+	var msg_list_str = ["msg_host","msg_port","msg_path","msg_protocol","msg_user","msg_password","subtopic","topic"]
+	var msg_list = [msg_host,msg_port,msg_path,msg_protocol,msg_user,msg_password,subtopic,topic]
+	var msg_id_list = ["host","port","path","protocol","user","password","subtopic","topic"]
+
+	msg_plug();
+	function msg_get(){
+		for(i=0; i<msg_list.length; i++){
+			if(document.getElementById(msg_id_list[i]) != null){
+				msg_list[i] = document.getElementById(msg_id_list[i]).value;
+			}
+		}
+	}
+	function save(){
+		for(i = 0; i < msg_list.length; i++) { 
+			localStorage.setItem(msg_list_str[i], msg_list[i]);
+		}
+	}
+	function msg_plug(){
+		for(i = 0; i < msg_id_list.length; i++) { 
+			document.getElementById(msg_id_list[i]).value = localStorage.getItem(msg_list_str[i]);
+		}
+	}
+	function cliksave(){
+		msg_get();
+		save();
+		alert("服务信息已保存！");
+	}
+	
+
+	//localStorage.setItem("lastname", "Smith");
+	document.getElementById("clientID").setAttribute("value",randomID()); 	//生成随机clientID
+	var client;																//创建一个客户端对象
+/* 连接服务器 */
+	function connectMQTT(){
+		var host = document.getElementById("host").value;			//服务器地址
+        var port = document.getElementById("port").value;			//服务器端口
+		var path = document.getElementById("path").value;			//服务器路径
+		var clientID = document.getElementById("clientID").value;	//clientID
+		var protocol = document.getElementById("protocol").value;	//连接所用协议
+		var user = document.getElementById("user").value;			//用户名
+		var password = document.getElementById("password").value;	//用户密码
+		var url = host+':'+port+path;								//URL地址
+		console.log(url);											//后台输入URL地址
+		var options = {												//创建一个参数对象
+			clientID:clientID,										//clientID
+			username:user,											//用户名
+			password:password,										//用户密码
+			protocol:protocol										//连接所用协议
+		};
+		client = mqtt.connect(url,options);							//连接服务器
+		console.log(client);
+		console.log(client.connected);
+		client.stream.on('error', function(err) {					//连接错误时触发
+			console.error('Connection error:'+err);
+			console.log('连接失败');
+			alert('连接失败');
+			client.end();											//关闭客户端对象
+		})
+		client.on('connect',function(packet){													//连接服务器后触发
+			document.getElementById("connectBtn").setAttribute("disabled","disabled");			//连接按钮不可用
+			document.getElementById("connectBtn").innerHTML = "已连接";							//连接按钮显示为已连接
+			document.getElementById("disconnectBtn").removeAttribute("disabled","disabled");	//断开按钮设为可用
+			document.getElementById("disconnectBtn").innerHTML = "断开";						//断开按钮显示为断开
+			client.on('message', message_str)													//定义接收消息后触发回调函数
+			var messageTextArea = document.getElementById("messageTextArea");					//textarea添加文本
+			messageTextArea.value += "已连接\n"													//textarea添加文本
+			console.log("已连接");																//后台输出已连接
+			//alert('连接成功');
+		})
+	}
+
+/* 断开连接服务器 */
+	function connectEND(){
+		if(client && client.connected){
+			client.end();
+			console.log("已断开连接");
+			//alert("已断开连接");
+			document.getElementById("connectBtn").removeAttribute("disabled","disabled");		//连接按钮设为可用
+			document.getElementById("connectBtn").innerHTML = "连接";							//连接按钮显示为连接
+			document.getElementById("disconnectBtn").setAttribute("disabled","disabled");		//断开按钮设为不可用
+			document.getElementById("disconnectBtn").innerHTML = "已断开";						//断开按钮显示已断开
+			var messageTextArea = document.getElementById("messageTextArea");					//textarea添加文本
+			messageTextArea.value += "已断开\n"													//textarea添加文本
+		}else{
+			console.log("未连接");
+		}
+	}
+
+/* 发送消息 */
+    function sendMessage() {
+	    var topic = document.getElementById("topic").value;			//获取主题
+        var message = document.getElementById("message").value;		//获取消息文本
+		if(client && client.connected){
+			client.publish(topic, message);							//发送消息
+			console.log("已发送");
+			alert("已发送");
+		}else{
+			console.log("未连接");
+			alert("未连接");
+		}
+    }
+
+/* 订阅主题 */
+	function subscribe_topic(){
+	    var topic = document.getElementById("subtopic").value;				//获取主题
+        client.subscribe(topic);											//定阅主题
+		var messageTextArea = document.getElementById("messageTextArea");	//获取textarea元素
+		messageTextArea.value += "已定阅"+topic+"\n";						//textarea添加文本
+		console.log("已订阅:"+topic);
+		//alert("已订阅:"+topic);
+	}
+
+
+/* 接收消息函数 */
+	function message_str(topic,message){													//监听消息函数
+		console.log("收到来自主题:"+topic+"的消息:"+message.toString());
+		var messageTextArea = document.getElementById("messageTextArea");					//获取textarea元素
+		messageTextArea.value += "收到来自主题:"+topic+"的消息:"+message.toString()+"\n"; 	//将新的文本追加到 value
+		if(auto_down_flag==1){
+			auto_down();
+		}
+	}
+	//接收消息自动滚动函数
+	function auto_down() {
+		var textarea = document.getElementById("messageTextArea");
+		textarea.scrollTop = textarea.scrollHeight;
+	}
+	function change_flag(){
+		if(auto_down_flag==1){
+			auto_down_flag = 0;
+			document.getElementById("auto_down_button").textContent = "开启自动滚动";
+		}
+		else{
+			auto_down_flag = 1;
+			document.getElementById("auto_down_button").textContent = "关闭自动滚动";
+			auto_down();
+		}
+	}
+
+/* 生成随机clientID */
+	function randomID(){
+		return 'clientID_' + Math.random().toString(16).substr(2, 8)
+	}
+
+  </script>
+</html>
